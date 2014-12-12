@@ -1,0 +1,31 @@
+var http = require('http');
+var url = require('url');
+var fs = require('fs');
+var ini = require("ini");
+
+
+var config = ini.parse(fs.readFileSync('./rapport/rapport.ini', 'utf-8'));
+console.log(config);
+
+var server = http.createServer(
+
+    function(req, res) {
+        var parsedUrl = url.parse(req.url, true);
+       
+
+        if (req.method == "POST") {
+            if (parsedUrl['path'] == '/gegevens') {
+
+                res.writeHead(200, {
+                    'Content-Type': 'application/json'
+                });
+                var result = "OK";
+                res.end(JSON.stringify(result));
+            }
+        }
+
+        res.writeHead(400);
+        res.end();
+    }
+);
+server.listen(config.rapportage.poort);
