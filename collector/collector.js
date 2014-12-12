@@ -30,7 +30,7 @@ setInterval(function() {
  * Verzend de data naar de centrale rapportage
  */
 function verzendData(data) {
-  console.log(data);
+
   var options = {
     host: config.rapportage.adres,
     port: config.rapportage.poort,
@@ -43,20 +43,26 @@ function verzendData(data) {
   };
 
   var req = http.request(options, function(res) {
-    res.setEncoding('utf-8');
+    console.log(res.statusCode);
+    if (res.statusCode == 200) {
+      var responseString = '';
 
-    var responseString = '';
+      res.on('data', function(data) {
+        responseString += data;
+      });
 
-    res.on('data', function(data) {
-      responseString += data;
-    });
+      res.on('end', function() {
+        var resultObject = JSON.parse(responseString);
+      });
 
-    res.on('end', function() {
-      var resultObject = JSON.parse(responseString);
-    });
 
+    }
+    else {
+      console.log("Niet verzonden. Status: " + res.statusCode);
+    }
   });
-
+  req.write(data, "utf-8");
+  req.end();
   /*
    * Log error en stop process
    */
@@ -64,8 +70,5 @@ function verzendData(data) {
     console.log(e);
     process.exit(1);
   });
-
-  req.write(data, "utf-8");
-  req.end();
 
 };
