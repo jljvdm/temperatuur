@@ -43,7 +43,7 @@ function verzendData(data) {
   };
 
   var req = http.request(options, function(res) {
-    console.log(res.statusCode);
+
     if (res.statusCode == 200) {
       var responseString = '';
 
